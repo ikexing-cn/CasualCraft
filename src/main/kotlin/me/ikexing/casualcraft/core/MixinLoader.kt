@@ -6,7 +6,7 @@ class MixinLoader : ILateMixinLoader {
 
     override fun getMixinConfigs(): List<String> {
         return listOf(
-
+            "mixins.casualcraft.json"
         )
     }
 

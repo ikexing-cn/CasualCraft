@@ -1,0 +1,10 @@
+{
+  "required": false,
+  "compatibilityLevel": "JAVA_8",
+  "package": "me.ikexing.casualcraft.mixin",
+  "minVersion": "0.8",
+  "refmap": "mixins.casualcraft.refmap.json",
+  "mixins": [
+    "MixinTilePool"
+  ]
+}

@@ -38,6 +38,7 @@ minecraft {
 
 repositories {
     mavenCentral()
+    maven { url "https://maven.thiakil.com" }
     maven { url 'https://maven.blamejared.com' }
     maven { url "https://maven.shadowfacts.net" }
     maven { url "https://maven.cleanroommc.com" }
@@ -49,6 +50,8 @@ dependencies {
 
     deobfCompile "zone.rong:mixinbooter:5.0"
     deobfCompile "net.shadowfacts:Forgelin:1.8.4"
+    deobfCompile "vazkii.botania:Botania:r1.10-364.5"
+    deobfCompile "com.azanor.baubles:Baubles:1.12-1.5.2"
     deobfCompile "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.681"
 }
 
