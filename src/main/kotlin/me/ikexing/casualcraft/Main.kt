@@ -15,5 +15,6 @@ object Main {
     const val MOD_VERSION = "1.0.0"
 
     const val LANG_ADAPTER = "net.shadowfacts.forgelin.KotlinAdapter"
-    const val DEPENDENCIES = "after:crafttweaker;required-after:forgelin;required-after:mixinbooter"
+    const val DEPENDENCIES = "after:crafttweaker;required-after:forgelin;"
+
 }
