@@ -1,6 +1,10 @@
 package me.ikexing.casualcraft
 
+import crafttweaker.CraftTweakerAPI
+import crafttweaker.IAction
 import net.minecraftforge.fml.common.Mod
+import net.minecraftforge.fml.common.Mod.EventHandler
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 
 @Mod(
     modid = Main.MOD_ID,
@@ -16,5 +20,15 @@ object Main {
 
     const val LANG_ADAPTER = "net.shadowfacts.forgelin.KotlinAdapter"
     const val DEPENDENCIES = "after:crafttweaker;required-after:forgelin;"
+
+    val LATE_ADD_ACTIONS = mutableListOf<IAction>()
+    val LATE_REMOVE_ACTIONS = mutableListOf<IAction>()
+
+    @EventHandler
+    fun loadComplete(event: FMLPostInitializationEvent) {
+        // remove should be first and then add
+        LATE_REMOVE_ACTIONS.forEach(CraftTweakerAPI::apply)
+        LATE_ADD_ACTIONS.forEach(CraftTweakerAPI::apply)
+    }
 
 }

@@ -1,11 +1,13 @@
 package me.ikexing.casualcraft.utils
 
+import crafttweaker.CraftTweakerAPI
 import crafttweaker.api.block.IBlockState
 import crafttweaker.api.item.IIngredient
 import crafttweaker.api.item.IItemStack
 import crafttweaker.api.item.IngredientStack
 import crafttweaker.api.minecraft.CraftTweakerMC
 import crafttweaker.api.oredict.IOreDictEntry
+import me.ikexing.casualcraft.Main
 import net.minecraft.block.Block
 import net.minecraft.item.ItemStack
 
@@ -30,4 +32,15 @@ fun IIngredient.toObject(): Any? {
         is IngredientStack -> this.items
         else -> null
     }
+}
+
+fun ItemStack.toCrtType(): IItemStack {
+    return CraftTweakerMC.getIItemStack(this)
+}
+
+fun logError(message: String) {
+    CraftTweakerAPI.logError(
+        "[${Main.MOD_NAME}] Failed to process the action correctly.",
+        IllegalArgumentException(message)
+    )
 }
