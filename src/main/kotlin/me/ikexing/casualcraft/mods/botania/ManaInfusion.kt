@@ -53,6 +53,7 @@ object ManaInfusion {
         override fun apply() {
             val recipe = RecipeManaInfusion(output.original(), input.toObject(), mana)
             val catalyst = catalystState ?: return
+            // FIXME: when catalyst is null, it add normal recipe
             when (catalyst) {
                 is IBlockState -> recipe.catalyst = catalyst.original()
                 is IItemStack -> recipe.catalyst = catalyst.toBlockState()
