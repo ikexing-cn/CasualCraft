@@ -10,7 +10,11 @@ import net.minecraftforge.oredict.OreDictionary
 fun ItemStack.matches(other: ItemStack): Boolean {
     return if (Loader.isModLoaded("crafttweaker"))
         CraftTweakerMC.getIItemStack(this).matches(CraftTweakerMC.getIItemStack(other))
-    else if (other.hasTagCompound()) this.matchesTag(other) else simpleEquals(other)
+    else if (other.hasTagCompound())
+        this.matchesTag(other)
+    else !this.isEmpty && other.isEmpty && this.item == other.item && this.metadata == other.metadata && this.count >= other.count
+            && (other.itemDamage == OreDictionary.WILDCARD_VALUE || this.itemDamage == OreDictionary.WILDCARD_VALUE || other.metadata == this.metadata ||
+            (!other.hasSubtypes && !other.item.isDamageable))
 }
 
 fun ItemStack.matchesTag(other: ItemStack): Boolean {
@@ -19,7 +23,8 @@ fun ItemStack.matchesTag(other: ItemStack): Boolean {
     if (this.hasTagCompound() != other.hasTagCompound())
         return false
 
-    val itemMatches = other.item === this.item && this.metaEquals(other)
+    val itemMatches = this.item === other.item &&
+            (other.itemDamage == OreDictionary.WILDCARD_VALUE || this.itemDamage == OreDictionary.WILDCARD_VALUE || other.metadata == this.metadata)
 
     if (itemMatches) {
         if (thisTag == null && stackTag == null)
@@ -30,15 +35,3 @@ fun ItemStack.matchesTag(other: ItemStack): Boolean {
     }
     return itemMatches
 }
-
-fun ItemStack.metaEquals(other: ItemStack): Boolean {
-    return other.itemDamage == OreDictionary.WILDCARD_VALUE
-            || this.itemDamage == OreDictionary.WILDCARD_VALUE
-            || other.itemDamage == this.itemDamage || !other.hasSubtypes
-}
-
-fun ItemStack.simpleEquals(other: ItemStack) = (!this.isEmpty && !other.isEmpty &&
-        this.item === other.item &&
-        this.count >= other.count &&
-        this.metaEquals(other)
-        && !other.item.isDamageable)
