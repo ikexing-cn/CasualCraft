@@ -34,6 +34,13 @@ fun IIngredient.toObject(): Any? {
     }
 }
 
+fun IIngredient.toItems(): List<ItemStack> {
+    return when (this) {
+        is IItemStack -> listOf(this.original())
+        else -> this.items.map { it.original().setCountAndReturnThis(this.amount) }
+    }
+}
+
 fun ItemStack.toCrtType(): IItemStack {
     return CraftTweakerMC.getIItemStack(this)
 }

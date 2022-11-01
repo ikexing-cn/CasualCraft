@@ -1,39 +1,33 @@
 package me.ikexing.casualcraft.recipes
 
 import me.ikexing.casualcraft.utils.matches
-import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 
 class RecipeLightningTransform(
     val output: ItemStack,
-    private val input: List<ItemStack>,
-    val chance: Double?
+    private val input: List<List<ItemStack>>,
+    val chance: Double,
+    private val priority: Int
 ) {
 
-    // FIXME: match no stackable items and recipe priority
-    fun matches(input: List<ItemStack>): Boolean {
-        return input.count { stack -> this.input.any { it.matches(stack) } } >= this.input.size
+    fun matches(input: List<ItemStack>, consume: Boolean): Boolean {
+        return input.count { stack -> this.input.any { it.any { item ->
+            val matches = item.matches(stack)
+            if (matches && consume) stack.shrink(item.count)
+            matches
+        } } } >= this.input.size
     }
 
     companion object {
 
-        // TODO: recipe priority
-        private val lightningTransformRecipes: List<RecipeLightningTransform> = mutableListOf(
-            RecipeLightningTransform(
-                ItemStack(Items.COOKIE),
-                listOf(ItemStack(Items.STONE_AXE), ItemStack(Items.DIAMOND, 2)),
-                1.0
-            ),
-            RecipeLightningTransform(
-                ItemStack(Items.DIAMOND),
-                listOf(ItemStack(Items.STONE_SWORD)),
-                1.0
-            )
-        )
+        private var lightningTransformRecipes: MutableList<RecipeLightningTransform> = mutableListOf()
 
-        fun matches(input: List<ItemStack>): RecipeLightningTransform? {
-            if (input.isEmpty()) return null
-            return lightningTransformRecipes.firstOrNull { it.matches(input) }
+        fun addRecipe(output: ItemStack, input: List<List<ItemStack>>, change: Double, priority: Int) {
+            lightningTransformRecipes.add(RecipeLightningTransform(output, input, change, priority))
+        }
+
+        fun matches(input: List<ItemStack>, consume: Boolean): RecipeLightningTransform? {
+            return lightningTransformRecipes.sortedBy { it.priority }.firstOrNull { it.matches(input, consume) }
         }
 
     }

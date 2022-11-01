@@ -35,3 +35,8 @@ fun ItemStack.matchesTag(other: ItemStack): Boolean {
     }
     return itemMatches
 }
+
+fun ItemStack.setCountAndReturnThis(count: Int): ItemStack {
+    this.count = count
+    return this
+}
