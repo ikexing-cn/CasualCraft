@@ -25,9 +25,8 @@ object EventHandler {
 
         recipe.let {
             if (Random.nextDouble() <= it.chance) {
-                var outputCount = recipe.output.count
-                // TODO: check why this is not working
-                while (Objects.isNull(RecipeLightningTransform.matches(entities.map { e -> e.item }, true))) {
+                var outputCount = 0
+                while (Objects.nonNull(RecipeLightningTransform.matches(entities.map { e -> e.item }, true))) {
                     outputCount += it.output.count
                 }
 

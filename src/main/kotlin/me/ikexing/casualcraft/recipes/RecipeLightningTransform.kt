@@ -1,6 +1,7 @@
 package me.ikexing.casualcraft.recipes
 
 import me.ikexing.casualcraft.utils.matches
+import me.ikexing.casualcraft.utils.setCountAndReturnThis
 import net.minecraft.item.ItemStack
 
 class RecipeLightningTransform(
@@ -11,11 +12,18 @@ class RecipeLightningTransform(
 ) {
 
     fun matches(input: List<ItemStack>, consume: Boolean): Boolean {
-        return input.count { stack -> this.input.any { it.any { item ->
-            val matches = item.matches(stack)
-            if (matches && consume) stack.shrink(item.count)
-            matches
-        } } } >= this.input.size
+        return input.count { inputStack ->
+            this.input.any {
+                it.any { recipeInputStack ->
+                    val copyInputStack = inputStack.copy().setCountAndReturnThis(1)
+                    val copyRecipeInputStack = recipeInputStack.copy().setCountAndReturnThis(1)
+                    val matches = copyInputStack.matches(copyRecipeInputStack)
+                            && inputStack.count >= recipeInputStack.count
+                    if (matches && consume) inputStack.shrink(recipeInputStack.count)
+                    matches
+                }
+            }
+        } >= this.input.size
     }
 
     companion object {
@@ -27,7 +35,9 @@ class RecipeLightningTransform(
         }
 
         fun matches(input: List<ItemStack>, consume: Boolean): RecipeLightningTransform? {
-            return lightningTransformRecipes.sortedBy { it.priority }.firstOrNull { it.matches(input, consume) }
+            return lightningTransformRecipes.sortedByDescending { it.priority }
+                .sortedByDescending { it.input.size }
+                .firstOrNull { it.matches(input, consume) }
         }
 
     }
