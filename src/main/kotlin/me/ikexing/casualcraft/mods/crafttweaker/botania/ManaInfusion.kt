@@ -9,11 +9,13 @@ import crafttweaker.api.item.IItemStack
 import crafttweaker.api.minecraft.CraftTweakerMC
 import me.ikexing.casualcraft.Main
 import me.ikexing.casualcraft.utils.*
+import net.minecraft.item.ItemStack
 import stanhebben.zenscript.annotations.Optional
 import stanhebben.zenscript.annotations.ZenClass
 import stanhebben.zenscript.annotations.ZenMethod
 import vazkii.botania.api.BotaniaAPI
 import vazkii.botania.api.recipe.RecipeManaInfusion
+import java.util.*
 
 @ZenRegister
 @ModOnly("botania")
@@ -22,20 +24,20 @@ object ManaInfusion {
 
     @JvmStatic
     @ZenMethod
-    fun addInfusion(output: IItemStack, input: IIngredient, mana: Int, @Optional catalystState: Any?) {
+    fun addRecipe(output: IItemStack, input: IIngredient, mana: Int, @Optional catalystState: Any?) {
         Main.LATE_ADD_ACTIONS.add(AddRecipe(output, input, mana, catalystState))
     }
 
     @JvmStatic
     @ZenMethod
     fun addAlchemy(output: IItemStack, input: IIngredient, mana: Int) {
-        this.addInfusion(output, input, mana, CraftTweakerMC.getBlockState(RecipeManaInfusion.alchemyState))
+        this.addRecipe(output, input, mana, CraftTweakerMC.getBlockState(RecipeManaInfusion.alchemyState))
     }
 
     @JvmStatic
     @ZenMethod
     fun addConjuration(output: IItemStack, input: IIngredient, mana: Int) {
-        this.addInfusion(output, input, mana, CraftTweakerMC.getBlockState(RecipeManaInfusion.conjurationState))
+        this.addRecipe(output, input, mana, CraftTweakerMC.getBlockState(RecipeManaInfusion.conjurationState))
     }
 
     @JvmStatic
@@ -52,11 +54,10 @@ object ManaInfusion {
     ) : IAction {
         override fun apply() {
             val recipe = RecipeManaInfusion(output.original(), input.toObject(), mana)
-            val catalyst = catalystState ?: return
-            // FIXME: when catalyst is null, it add normal recipe
-            when (catalyst) {
+            when (val catalyst = catalystState) {
                 is IBlockState -> recipe.catalyst = catalyst.original()
                 is IItemStack -> recipe.catalyst = catalyst.toBlockState()
+                null -> {}
                 else -> logError("Type of catalystState is not IBlockState or IItemStack")
             }
             BotaniaAPI.manaInfusionRecipes.add(recipe)
@@ -71,19 +72,23 @@ object ManaInfusion {
     private class RemoveRecipe(
         private var output: IItemStack
     ) : IAction {
-        val toRemove = BotaniaAPI.manaInfusionRecipes
-            .filter { it.output != null && output.matches(it.output.toCrtType()) }.toList()
 
         override fun apply() {
+            val toRemove = BotaniaAPI.manaInfusionRecipes
+                .filter { it.output != null && ItemStack.areItemStacksEqual(output.original(), it.output) }
             if (toRemove.isEmpty()) {
                 logError("No Mana Infusion Recipe for $output")
-            } else if (BotaniaAPI.manaInfusionRecipes.removeIf { it in toRemove }) {
-                logError("Failed to remove Mana Infusion Recipe for $output")
+            } else {
+                toRemove.forEach {
+                    BotaniaAPI.manaInfusionRecipes.removeIf { r -> ItemStack.areItemStacksEqual(it.output, r.output) }
+                }
             }
         }
 
         override fun describe(): String {
-            return ("Remove ${toRemove.size} Mana Infusion Recipe(s) for $output")
+            val toRemove = BotaniaAPI.manaInfusionRecipes
+                .filter { it.output != null && ItemStack.areItemStacksEqual(output.original(), it.output) }.toList()
+            return "Remove ${toRemove.size} Mana Infusion Recipe(s) for $output"
         }
 
     }
