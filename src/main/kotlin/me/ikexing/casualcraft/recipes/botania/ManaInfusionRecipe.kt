@@ -8,12 +8,13 @@ import vazkii.botania.api.recipe.RecipeManaInfusion
 
 object ManaInfusionRecipe {
 
-    fun addRecipe(output: ItemStack, input: Any, mana: Int, catalystState: IBlockState?) {
+    fun addRecipe(output: ItemStack, input: Any, mana: Int, catalystState: IBlockState?): RecipeManaInfusion {
         val recipe = RecipeManaInfusion(output, input, mana)
         when (catalystState) {
             is IBlockState -> recipe.catalyst = catalystState
         }
         BotaniaAPI.manaInfusionRecipes.add(recipe)
+        return recipe
     }
 
     fun removeRecipe(output: ItemStack): Boolean {
