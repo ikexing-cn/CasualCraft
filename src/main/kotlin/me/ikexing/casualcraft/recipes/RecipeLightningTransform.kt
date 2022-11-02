@@ -17,7 +17,7 @@ class RecipeLightningTransform(
                 it.any { recipeInputStack ->
                     val copyInputStack = inputStack.copy().setCountAndReturnThis(1)
                     val copyRecipeInputStack = recipeInputStack.copy().setCountAndReturnThis(1)
-                    val matches = copyInputStack.matches(copyRecipeInputStack)
+                    val matches = copyInputStack.matches(copyRecipeInputStack, false)
                             && inputStack.count >= recipeInputStack.count
                     if (matches && consume) inputStack.shrink(recipeInputStack.count)
                     matches

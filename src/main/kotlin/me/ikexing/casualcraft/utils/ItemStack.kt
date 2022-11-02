@@ -5,21 +5,22 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.oredict.OreDictionary
 
-fun ItemStack.matches(other: ItemStack): Boolean {
-    val thisTag = this.tagCompound
-    val stackTag: NBTTagCompound? = other.tagCompound
-    if (this.hasTagCompound() != other.hasTagCompound())
-        return false
+fun ItemStack.matches(other: ItemStack, matchCount: Boolean): Boolean {
+    val thisCopy = this.copy().setCountAndReturnThis(1)
+    val otherCopy = other.copy().setCountAndReturnThis(1)
 
-    val itemMatches = (this.item === other.item && this.count == other.count) &&
-            (other.itemDamage == OreDictionary.WILDCARD_VALUE || this.itemDamage == OreDictionary.WILDCARD_VALUE || other.metadata == this.metadata)
+    val thisTag = thisCopy.tagCompound
+    val stackTag: NBTTagCompound? = otherCopy.tagCompound
+    if (thisCopy.hasTagCompound() != otherCopy.hasTagCompound()) return false
+
+    val itemMatches =
+        (thisCopy.item === otherCopy.item) && (if (matchCount) this.count == other.count else thisCopy.count == otherCopy.count && this.count >= other.count) &&
+                (otherCopy.itemDamage == OreDictionary.WILDCARD_VALUE || thisCopy.itemDamage == OreDictionary.WILDCARD_VALUE || otherCopy.metadata == thisCopy.metadata)
 
     if (itemMatches) {
-        if (thisTag == null && stackTag == null)
-            return true
+        if (thisTag == null && stackTag == null) return true
 
-        if (!NBTConverter.from(thisTag, true).contains(NBTConverter.from(stackTag, true)))
-            return false
+        if (!NBTConverter.from(thisTag, true).contains(NBTConverter.from(stackTag, true))) return false
     }
     return itemMatches
 }

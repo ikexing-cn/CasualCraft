@@ -9,7 +9,6 @@ import crafttweaker.api.item.IItemStack
 import crafttweaker.api.minecraft.CraftTweakerMC
 import me.ikexing.casualcraft.Main
 import me.ikexing.casualcraft.utils.*
-import net.minecraft.item.ItemStack
 import stanhebben.zenscript.annotations.Optional
 import stanhebben.zenscript.annotations.ZenClass
 import stanhebben.zenscript.annotations.ZenMethod
@@ -75,19 +74,19 @@ object ManaInfusion {
 
         override fun apply() {
             val toRemove = BotaniaAPI.manaInfusionRecipes
-                .filter { it.output != null && ItemStack.areItemStacksEqual(output.original(), it.output) }
+                .filter { it.output != null && it.output.matches(output.original(), true) }
             if (toRemove.isEmpty()) {
                 logError("No Mana Infusion Recipe for $output")
             } else {
                 toRemove.forEach {
-                    BotaniaAPI.manaInfusionRecipes.removeIf { r -> ItemStack.areItemStacksEqual(it.output, r.output) }
+                    BotaniaAPI.manaInfusionRecipes.removeIf { r -> r.output.matches(it.output, true) }
                 }
             }
         }
 
         override fun describe(): String {
             val toRemove = BotaniaAPI.manaInfusionRecipes
-                .filter { it.output != null && ItemStack.areItemStacksEqual(output.original(), it.output) }.toList()
+                .filter { it.output != null && it.output.matches(output.original(), true) }.toList()
             return "Remove ${toRemove.size} Mana Infusion Recipe(s) for $output"
         }
 
