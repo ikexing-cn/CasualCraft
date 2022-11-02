@@ -1,4 +1,4 @@
-package me.ikexing.casualcraft.mods.botania
+package me.ikexing.casualcraft.mods.crafttweaker.botania
 
 import crafttweaker.IAction
 import crafttweaker.annotations.ModOnly
