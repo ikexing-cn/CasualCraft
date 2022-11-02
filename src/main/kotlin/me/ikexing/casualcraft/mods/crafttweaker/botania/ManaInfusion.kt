@@ -8,11 +8,11 @@ import crafttweaker.api.item.IIngredient
 import crafttweaker.api.item.IItemStack
 import crafttweaker.api.minecraft.CraftTweakerMC
 import me.ikexing.casualcraft.Main
+import me.ikexing.casualcraft.recipes.botania.ManaInfusionRecipe
 import me.ikexing.casualcraft.utils.*
 import stanhebben.zenscript.annotations.Optional
 import stanhebben.zenscript.annotations.ZenClass
 import stanhebben.zenscript.annotations.ZenMethod
-import vazkii.botania.api.BotaniaAPI
 import vazkii.botania.api.recipe.RecipeManaInfusion
 import java.util.*
 
@@ -52,14 +52,15 @@ object ManaInfusion {
         private var catalystState: Any?
     ) : IAction {
         override fun apply() {
-            val recipe = RecipeManaInfusion(output.original(), input.toObject(), mana)
-            when (val catalyst = catalystState) {
-                is IBlockState -> recipe.catalyst = catalyst.original()
-                is IItemStack -> recipe.catalyst = catalyst.toBlockState()
+            var catalyst: net.minecraft.block.state.IBlockState? = null
+
+            when (val temp = catalystState) {
+                is IBlockState -> catalyst = temp.original()
+                is IItemStack -> catalyst = temp.toBlockState()
                 null -> {}
                 else -> logError("Type of catalystState is not IBlockState or IItemStack")
             }
-            BotaniaAPI.manaInfusionRecipes.add(recipe)
+            ManaInfusionRecipe.addRecipe(output.original(), input.toObject(), mana, catalyst)
         }
 
         override fun describe(): String {
@@ -73,21 +74,11 @@ object ManaInfusion {
     ) : IAction {
 
         override fun apply() {
-            val toRemove = BotaniaAPI.manaInfusionRecipes
-                .filter { it.output != null && it.output.matches(output.original(), true) }
-            if (toRemove.isEmpty()) {
-                logError("No Mana Infusion Recipe for $output")
-            } else {
-                toRemove.forEach {
-                    BotaniaAPI.manaInfusionRecipes.removeIf { r -> r.output.matches(it.output, true) }
-                }
-            }
+            ManaInfusionRecipe.removeRecipe(output.original())
         }
 
         override fun describe(): String {
-            val toRemove = BotaniaAPI.manaInfusionRecipes
-                .filter { it.output != null && it.output.matches(output.original(), true) }.toList()
-            return "Remove ${toRemove.size} Mana Infusion Recipe(s) for $output"
+            return "Remove all ManaInfusion Recipe for $output"
         }
 
     }

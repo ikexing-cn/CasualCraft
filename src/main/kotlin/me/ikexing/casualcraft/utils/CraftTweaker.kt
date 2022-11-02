@@ -25,12 +25,12 @@ fun IBlockState.original(): net.minecraft.block.state.IBlockState {
     return CraftTweakerMC.getBlockState(this)
 }
 
-fun IIngredient.toObject(): Any? {
+fun IIngredient.toObject(): Any {
     return when (this) {
         is IOreDictEntry -> this.name
         is IItemStack -> this.original()
         is IngredientStack -> this.items
-        else -> null
+        else -> ItemStack.EMPTY.toCrtType()
     }
 }
 
