@@ -12,7 +12,6 @@ object ManaInfusionRecipe {
         val recipe = RecipeManaInfusion(output, input, mana)
         when (catalystState) {
             is IBlockState -> recipe.catalyst = catalystState
-            else -> {}
         }
         BotaniaAPI.manaInfusionRecipes.add(recipe)
     }

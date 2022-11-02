@@ -74,7 +74,9 @@ object ManaInfusion {
     ) : IAction {
 
         override fun apply() {
-            ManaInfusionRecipe.removeRecipe(output.original())
+            when (ManaInfusionRecipe.removeRecipe(output.original())) {
+                false -> logError("No Mana Infusion Recipe for $output")
+            }
         }
 
         override fun describe(): String {
