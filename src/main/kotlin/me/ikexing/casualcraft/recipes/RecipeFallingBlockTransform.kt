@@ -13,7 +13,7 @@ class RecipeFallingBlockTransform(
     }
 
     fun matches(block: IBlockState, input: List<ItemStack>, consume: Boolean): Boolean {
-        return if (exactMatch) this.block == block else this.block.block == block.block &&
+        return if (!exactMatch) this.block == block else this.block.block == block.block &&
                 super.matches(input, consume)
     }
 
