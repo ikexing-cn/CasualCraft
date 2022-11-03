@@ -1,7 +1,7 @@
 package me.ikexing.casualcraft.recipes
 
 import me.ikexing.casualcraft.utils.setCountAndReturnThis
-import me.ikexing.casualcraft.utils.sortedRecipes
+import me.ikexing.casualcraft.utils.matches
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
@@ -23,7 +23,7 @@ open class RecipeBaseTransform(
                 it.any { recipeInputStack ->
                     val copyInputStack = inputStack.copy().setCountAndReturnThis(1)
                     val copyRecipeInputStack = recipeInputStack.copy().setCountAndReturnThis(1)
-                    val matches = copyInputStack.sortedRecipes(copyRecipeInputStack, false)
+                    val matches = copyInputStack.matches(copyRecipeInputStack, false)
                             && inputStack.count >= recipeInputStack.count
                     if (matches && consume) inputStack.shrink(recipeInputStack.count)
                     matches
