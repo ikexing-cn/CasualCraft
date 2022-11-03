@@ -21,6 +21,11 @@ fun IItemStack.toBlockState(): net.minecraft.block.state.IBlockState {
     return Block.getBlockFromItem(original.item).getStateFromMeta(original.metadata)
 }
 
+fun net.minecraft.block.state.IBlockState.toCrtType(): IBlockState {
+    return CraftTweakerMC.getBlockState(this)
+}
+
+
 fun IBlockState.original(): net.minecraft.block.state.IBlockState {
     return CraftTweakerMC.getBlockState(this)
 }

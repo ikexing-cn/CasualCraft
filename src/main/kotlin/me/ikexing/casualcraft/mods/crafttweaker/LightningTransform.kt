@@ -5,7 +5,8 @@ import crafttweaker.annotations.ZenRegister
 import crafttweaker.api.item.IIngredient
 import crafttweaker.api.item.IItemStack
 import me.ikexing.casualcraft.Main
-import me.ikexing.casualcraft.recipes.RecipeLightningTransform
+import me.ikexing.casualcraft.recipes.RecipeBaseTransform
+import me.ikexing.casualcraft.recipes.RecipeLightningRecipe
 import me.ikexing.casualcraft.utils.original
 import me.ikexing.casualcraft.utils.toCrtType
 import me.ikexing.casualcraft.utils.toItems
@@ -32,7 +33,7 @@ object LightningTransform {
     ) : IAction {
 
         override fun apply() {
-            RecipeLightningTransform.addRecipe(output.original(), input.map { it.toItems() }.toList(), chance, priority)
+            RecipeBaseTransform.addRecipe(RecipeLightningRecipe(output.original(), input.map { it.toItems() }.toList(), chance, priority))
         }
 
         override fun describe(): String {

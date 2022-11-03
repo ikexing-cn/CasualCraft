@@ -1,14 +1,15 @@
 package me.ikexing.casualcraft.events
 
-import me.ikexing.casualcraft.recipes.RecipeLightningTransform
-import me.ikexing.casualcraft.utils.setCountAndReturnThis
+import me.ikexing.casualcraft.recipes.RecipeBaseTransform
+import me.ikexing.casualcraft.recipes.RecipeFallingBlockTransform
+import net.minecraft.entity.item.EntityFallingBlock
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
-import kotlin.random.Random
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
+import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent
 
 @EventBusSubscriber
 object EventHandler {
@@ -21,20 +22,23 @@ object EventHandler {
 
         if (world.isRemote || entity !is EntityItem) return
         val entities = world.getEntitiesWithinAABB(EntityItem::class.java, AxisAlignedBB(entity.position))
-        val recipe = RecipeLightningTransform.matches(entities.map { it.item }, false) ?: return
+        val recipe = RecipeBaseTransform.matchesLightning(entities.map { it.item }, false) ?: return
+        recipe.spawnOutput(entity.position, entities, world, true)
+    }
 
-        recipe.let {
-            if (Random.nextDouble() <= it.chance) {
-                var outputCount = 0
-                while (Objects.nonNull(RecipeLightningTransform.matches(entities.map { e -> e.item }, true))) {
-                    outputCount += it.output.count
-                }
+    @JvmStatic
+    @SubscribeEvent
+    fun onWorldTick(event: WorldTickEvent) {
+        if (event.side.isServer && event.phase === Phase.END) {
+            val world = event.world
+            val fallingBlockEntities = world.loadedEntityList.filterIsInstance<EntityFallingBlock>()
+            for (fallingBlock in fallingBlockEntities) {
+                if (world.isAirBlock(fallingBlock.position.down())) continue
+                if (RecipeFallingBlockTransform.blocks.contains(fallingBlock.block).not()) continue
 
-                val copy = it.output.copy().setCountAndReturnThis(outputCount.coerceAtMost(64))
-                val output = EntityItem(world, entity.posX, entity.posY, entity.posZ, copy)
-                entities.forEach(EntityItem::setDead)
-                output.setEntityInvulnerable(true)
-                world.spawnEntity(output)
+                val entityItems = world.getEntitiesWithinAABB(EntityItem::class.java, AxisAlignedBB(fallingBlock.position))
+                val recipe = fallingBlock.block?.let { it -> RecipeBaseTransform.matchesFallBlock(it, entityItems.map { it.item }, false) } ?: continue
+                recipe.spawnOutput(fallingBlock.position, entityItems, world, false)
             }
         }
     }

@@ -29,7 +29,7 @@ object Main {
     val BOTANIA = Container("botania", "Botania", ::Botania)
 
     @EventHandler
-    fun loadComplete(event: FMLPostInitializationEvent) {
+    fun onPostInit(event: FMLPostInitializationEvent) {
         // remove should be first and then add
         LATE_REMOVE_ACTIONS.forEach(CraftTweakerAPI::apply)
         LATE_ADD_ACTIONS.forEach(CraftTweakerAPI::apply)

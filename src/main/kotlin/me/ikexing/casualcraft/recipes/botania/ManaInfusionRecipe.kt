@@ -1,6 +1,6 @@
 package me.ikexing.casualcraft.recipes.botania
 
-import me.ikexing.casualcraft.utils.matches
+import me.ikexing.casualcraft.utils.sortedRecipes
 import net.minecraft.block.state.IBlockState
 import net.minecraft.item.ItemStack
 import vazkii.botania.api.BotaniaAPI
@@ -18,11 +18,11 @@ object ManaInfusionRecipe {
     }
 
     fun removeRecipe(output: ItemStack): Boolean {
-        val toRemove = BotaniaAPI.manaInfusionRecipes.filter { it.output != null && it.output.matches(output, true) }
+        val toRemove = BotaniaAPI.manaInfusionRecipes.filter { it.output != null && it.output.sortedRecipes(output, true) }
         return when (toRemove.isEmpty()) {
             true -> false
             false -> {
-                toRemove.forEach { remove -> BotaniaAPI.manaInfusionRecipes.removeIf { r -> r.output.matches(remove.output, true) } }
+                toRemove.forEach { remove -> BotaniaAPI.manaInfusionRecipes.removeIf { r -> r.output.sortedRecipes(remove.output, true) } }
                 true
             }
         }

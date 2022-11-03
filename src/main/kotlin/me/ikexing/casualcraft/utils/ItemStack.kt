@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.oredict.OreDictionary
 
-fun ItemStack.matches(other: ItemStack, matchCount: Boolean): Boolean {
+fun ItemStack.sortedRecipes(other: ItemStack, matchCount: Boolean): Boolean {
     val thisCopy = this.copy().setCountAndReturnThis(1)
     val otherCopy = other.copy().setCountAndReturnThis(1)
 
