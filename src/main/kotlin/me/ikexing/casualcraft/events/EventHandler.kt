@@ -1,15 +1,13 @@
 package me.ikexing.casualcraft.events
 
 import me.ikexing.casualcraft.recipes.RecipeBaseTransform
-import me.ikexing.casualcraft.recipes.RecipeFallingBlockTransform
-import net.minecraft.entity.item.EntityFallingBlock
+import me.ikexing.casualcraft.utils.event.CCWorldEventListener
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.util.math.AxisAlignedBB
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
-import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent
 
 @EventBusSubscriber
 object EventHandler {
@@ -28,19 +26,8 @@ object EventHandler {
 
     @JvmStatic
     @SubscribeEvent
-    fun onWorldTick(event: WorldTickEvent) {
-        if (event.side.isServer && event.phase === Phase.END) {
-            val world = event.world
-            val fallingBlockEntities = world.loadedEntityList.filterIsInstance<EntityFallingBlock>()
-            for (fallingBlock in fallingBlockEntities) {
-                if (world.isAirBlock(fallingBlock.position.down())) continue
-                if (RecipeFallingBlockTransform.blocks.contains(fallingBlock.block).not()) continue
-
-                val entityItems = world.getEntitiesWithinAABB(EntityItem::class.java, AxisAlignedBB(fallingBlock.position))
-                val recipe = fallingBlock.block?.let { it -> RecipeBaseTransform.matchesFallBlock(it, entityItems.map { it.item }, false) } ?: continue
-                recipe.spawnOutput(fallingBlock.position, entityItems, world, false)
-            }
-        }
+    fun onWorldLoad(event: WorldEvent.Load) {
+        event.world.addEventListener(CCWorldEventListener(event.world))
     }
 
 }
