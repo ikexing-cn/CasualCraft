@@ -2,9 +2,12 @@ package me.ikexing.casualcraft
 
 import crafttweaker.CraftTweakerAPI
 import crafttweaker.IAction
+import me.ikexing.casualcraft.client.KeyBinding
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
+import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+import net.minecraftforge.fml.relauncher.Side
 
 @Mod(
     modid = Main.MOD_ID,
@@ -23,6 +26,11 @@ object Main {
 
     val LATE_ADD_ACTIONS = mutableListOf<IAction>()
     val LATE_REMOVE_ACTIONS = mutableListOf<IAction>()
+
+    @EventHandler
+    fun onInit(event: FMLInitializationEvent) {
+        if (event.side == Side.CLIENT) KeyBinding.registerKeyBinding()
+    }
 
     @EventHandler
     fun onPostInit(event: FMLPostInitializationEvent) {
