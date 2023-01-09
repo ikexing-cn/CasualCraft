@@ -1,6 +1,5 @@
 package me.ikexing.casualcraft.recipes
 
-import me.ikexing.casualcraft.utils.setCountAndReturnThis
 import me.ikexing.casualcraft.utils.matches
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.EntityItem
@@ -21,8 +20,8 @@ open class RecipeBaseTransform(
         return input.count { inputStack ->
             this.input.any {
                 it.any { recipeInputStack ->
-                    val copyInputStack = inputStack.copy().setCountAndReturnThis(1)
-                    val copyRecipeInputStack = recipeInputStack.copy().setCountAndReturnThis(1)
+                    val copyInputStack = inputStack.copy().splitStack(1)
+                    val copyRecipeInputStack = recipeInputStack.copy().splitStack(1)
                     val matches = copyInputStack.matches(copyRecipeInputStack, false)
                             && inputStack.count >= recipeInputStack.count
                     if (matches && consume) inputStack.shrink(recipeInputStack.count)
@@ -40,7 +39,7 @@ open class RecipeBaseTransform(
                 outputCount += this.output.count
             }
 
-            val copy = this.output.copy().setCountAndReturnThis(outputCount.coerceAtMost(64))
+            val copy = this.output.copy().splitStack(outputCount.coerceAtMost(64))
             val output = EntityItem(world, pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), copy)
             if (dead) entities.forEach(EntityItem::setDead)
             output.setEntityInvulnerable(true)

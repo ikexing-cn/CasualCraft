@@ -53,9 +53,7 @@ object FallingBlockTransform {
 
         override fun describe(): String {
             return "Add FallingBlockTransform recipe for ${
-                input.flatMap { it ->
-                    it.toItems().map { it.toCrtType().toCommandString() }
-                }
+                input.flatMap { it -> it.toItems().map { it.toCrtType().toCommandString() }  }
             } -> $output with $block, $chance chance and $priority priority"
         }
 

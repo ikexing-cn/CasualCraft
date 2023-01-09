@@ -6,8 +6,8 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraftforge.oredict.OreDictionary
 
 fun ItemStack.matches(other: ItemStack, matchCount: Boolean): Boolean {
-    val thisCopy = this.copy().setCountAndReturnThis(1)
-    val otherCopy = other.copy().setCountAndReturnThis(1)
+    val thisCopy = this.copy().splitStack(1)
+    val otherCopy = other.copy().splitStack(1)
 
     val thisTag = thisCopy.tagCompound
     val stackTag: NBTTagCompound? = otherCopy.tagCompound
@@ -23,9 +23,4 @@ fun ItemStack.matches(other: ItemStack, matchCount: Boolean): Boolean {
         if (!NBTConverter.from(thisTag, true).contains(NBTConverter.from(stackTag, true))) return false
     }
     return itemMatches
-}
-
-fun ItemStack.setCountAndReturnThis(count: Int): ItemStack {
-    this.count = count
-    return this
 }
