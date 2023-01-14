@@ -1,20 +1,16 @@
-package me.ikexing.casualcraft.utils.event
+package me.ikexing.casualcraft.events
 
-import me.ikexing.casualcraft.recipes.RecipeBaseTransform
-import me.ikexing.casualcraft.recipes.RecipeFallingBlockTransform
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityFallingBlock
-import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.SoundCategory
 import net.minecraft.util.SoundEvent
-import net.minecraft.util.math.AxisAlignedBB
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.IWorldEventListener
 import net.minecraft.world.World
+import net.minecraftforge.common.MinecraftForge
 
-class CCWorldEventListener(private val worldIn: World) : IWorldEventListener {
+class CCWorldEventListener : IWorldEventListener {
 
     override fun notifyBlockUpdate(worldIn: World, pos: BlockPos, oldState: IBlockState, newState: IBlockState, flags: Int) {}
 
@@ -66,14 +62,7 @@ class CCWorldEventListener(private val worldIn: World) : IWorldEventListener {
     override fun onEntityAdded(entityIn: Entity) {}
 
     override fun onEntityRemoved(entityIn: Entity) {
-        if (!worldIn.isRemote && entityIn is EntityFallingBlock) {
-            if (worldIn.isAirBlock(entityIn.position.down())) return
-            if (RecipeFallingBlockTransform.blocks.contains(entityIn.block).not()) return
-
-            val entityItems = worldIn.getEntitiesWithinAABB(EntityItem::class.java, AxisAlignedBB(entityIn.position))
-            val recipe = entityIn.block?.let { it -> RecipeBaseTransform.matchesFallBlock(it, entityItems.map { it.item }, false) } ?: return
-            recipe.spawnOutput(entityIn.position, entityItems, worldIn, false)
-        }
+        MinecraftForge.EVENT_BUS.post(CCEntityRemoveEvent(entityIn))
     }
 
     override fun broadcastSound(soundID: Int, pos: BlockPos, data: Int) {}
