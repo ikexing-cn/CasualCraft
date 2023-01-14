@@ -1,11 +1,11 @@
 package me.ikexing.casualcraft.mods.crafttweaker
 
+import crafttweaker.CraftTweakerAPI
 import crafttweaker.IAction
 import crafttweaker.annotations.ZenRegister
 import crafttweaker.api.block.IBlockState
 import crafttweaker.api.item.IIngredient
 import crafttweaker.api.item.IItemStack
-import me.ikexing.casualcraft.Main
 import me.ikexing.casualcraft.recipes.RecipeBaseTransform
 import me.ikexing.casualcraft.recipes.RecipeFallingBlockTransform
 import me.ikexing.casualcraft.utils.original
@@ -27,7 +27,7 @@ object FallingBlockTransform {
         @Optional(valueBoolean = true) exactMatch: Boolean,
         @Optional(valueDouble = 1.0) chance: Double, @Optional(valueLong = 1) priority: Int
     ) {
-        Main.LATE_ADD_ACTIONS.add(AddRecipe(block, output, exactMatch, input, chance, priority))
+        CraftTweakerAPI.apply(AddRecipe(block, output, exactMatch, input, chance, priority))
     }
 
     @JvmStatic

@@ -1,10 +1,10 @@
 package me.ikexing.casualcraft.mods.crafttweaker
 
+import crafttweaker.CraftTweakerAPI
 import crafttweaker.IAction
 import crafttweaker.annotations.ZenRegister
 import crafttweaker.api.item.IIngredient
 import crafttweaker.api.item.IItemStack
-import me.ikexing.casualcraft.Main
 import me.ikexing.casualcraft.recipes.RecipeBaseTransform
 import me.ikexing.casualcraft.recipes.RecipeLightningRecipe
 import me.ikexing.casualcraft.utils.original
@@ -24,7 +24,7 @@ object LightningTransform {
         output: IItemStack, input: Array<IIngredient>,
         @Optional(valueDouble = 1.0) chance: Double, @Optional(valueLong = 1) priority: Int
     ) {
-        Main.LATE_ADD_ACTIONS.add(AddRecipe(output, input, chance, priority))
+        CraftTweakerAPI.apply(AddRecipe(output, input, chance, priority))
     }
 
     class AddRecipe(

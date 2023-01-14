@@ -13,12 +13,12 @@ class RecipeFallingBlockTransform(
     }
 
     fun matches(block: IBlockState, input: List<ItemStack>, consume: Boolean): Boolean {
-        return if (!exactMatch) this.block == block else this.block.block == block.block &&
-                super.matches(input, consume)
+        return if (!exactMatch) this.block == block else this.block.block == block.block
+            && super.resultMatches(input, consume)
     }
 
     companion object {
-        val blocks = mutableListOf<IBlockState>()
+       val blocks = mutableListOf<IBlockState>()
     }
 
 }

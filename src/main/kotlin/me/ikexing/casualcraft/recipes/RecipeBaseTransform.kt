@@ -16,19 +16,21 @@ open class RecipeBaseTransform(
     val priority: Int
 ) {
 
-    fun matches(input: List<ItemStack>, consume: Boolean): Boolean {
-        return input.count { inputStack ->
+    fun matches(input: List<ItemStack>, consume: Boolean): List<ItemStack> {
+        return input.filter { inputStack ->
             this.input.any {
                 it.any { recipeInputStack ->
-                    val copyInputStack = inputStack.copy().splitStack(1)
-                    val copyRecipeInputStack = recipeInputStack.copy().splitStack(1)
-                    val matches = copyInputStack.matches(copyRecipeInputStack, false)
+                    val matches = inputStack.matches(recipeInputStack, false)
                             && inputStack.count >= recipeInputStack.count
                     if (matches && consume) inputStack.shrink(recipeInputStack.count)
                     matches
                 }
             }
-        } >= this.input.size
+        }
+    }
+
+    fun resultMatches(input: List<ItemStack>,  consume: Boolean): Boolean {
+        return matches(input, consume).size >= input.size
     }
 
     fun spawnOutput(pos: BlockPos, entities: List<EntityItem>, world: World, dead: Boolean) {
@@ -62,7 +64,9 @@ open class RecipeBaseTransform(
         }
 
         fun matchesLightning(input: List<ItemStack>, consume: Boolean): RecipeBaseTransform? {
-            return sortedRecipes(RecipeLightningRecipe::class.java).firstOrNull { it.matches(input, consume) }
+            return sortedRecipes(RecipeLightningRecipe::class.java).firstOrNull {
+                it.resultMatches(input, consume)
+            }
         }
 
         fun matchesFallBlock(block: IBlockState, input: List<ItemStack>, consume: Boolean): RecipeBaseTransform? {
