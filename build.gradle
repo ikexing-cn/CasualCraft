@@ -22,6 +22,9 @@ minecraft {
     makeObfSourceJar = false
     version = project.forgeVersion
     mappings = project.mcpVersion
+
+    clientJvmArgs += '-Dfml.coreMods.load=me.ikexing.casualcraft.core.CasualCraftPlugin'
+    serverJvmArgs += '-Dfml.coreMods.load=me.ikexing.casualcraft.core.CasualCraftPlugin'
 }
 
 repositories {
@@ -55,4 +58,13 @@ processResources {
 
 runClient {
     args '--username', 'dev_player'
+}
+
+jar {
+    manifest {
+        attributes([
+                "FMLCorePlugin"              : 'me.ikexing.casualcraft.core.CasualCraftPlugin',
+                "FMLCorePluginContainsFMLMod": true
+        ])
+    }
 }

@@ -10,7 +10,7 @@ import net.minecraft.world.World
 open class RecipeBaseTransform(
     private val output: ItemStack,
     private val input: List<List<ItemStack>>,
-    private val chance: Double,
+    @Suppress("unused") private val chance: Double,
     val priority: Int
 ) {
 
@@ -63,6 +63,12 @@ open class RecipeBaseTransform(
             return sortedRecipes(RecipeFallingBlockTransform::class.java).firstOrNull {
                 (it as RecipeFallingBlockTransform).matches(block, input, consume)
             } as RecipeFallingBlockTransform?
+        }
+
+        fun matchesEntityCloudRecipe(input: List<EntityItem>, consume: Boolean): RecipeEntityCloudRecipe? {
+            return sortedRecipes(RecipeEntityCloudRecipe::class.java).firstOrNull {
+                (it as RecipeEntityCloudRecipe).matches(input, consume)
+            } as RecipeEntityCloudRecipe?
         }
 
     }

@@ -7,9 +7,11 @@ import crafttweaker.api.item.IItemStack
 import crafttweaker.api.item.IngredientStack
 import crafttweaker.api.minecraft.CraftTweakerMC
 import crafttweaker.api.oredict.IOreDictEntry
+import crafttweaker.api.potions.IPotionEffect
 import me.ikexing.casualcraft.Main
 import net.minecraft.block.Block
 import net.minecraft.item.ItemStack
+import net.minecraft.potion.PotionEffect
 
 fun IItemStack.original(): ItemStack {
     return CraftTweakerMC.getItemStack(this)
@@ -48,6 +50,10 @@ fun IIngredient.toItems(): List<ItemStack> {
 
 fun ItemStack.toCrtType(): IItemStack {
     return CraftTweakerMC.getIItemStack(this)
+}
+
+fun IPotionEffect.original(): PotionEffect {
+    return CraftTweakerMC.getPotionEffect(this)
 }
 
 fun logError(message: String) {
