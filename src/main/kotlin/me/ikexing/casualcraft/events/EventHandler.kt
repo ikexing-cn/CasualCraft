@@ -28,6 +28,9 @@ object EventHandler {
         if (world.isRemote || entity !is EntityItem) return
         val entities = world.getEntitiesWithinAABB(EntityItem::class.java, AxisAlignedBB(entity.position))
         val recipe = RecipeBaseTransform.matchesLightning(entities.map { it.item }, false) ?: return
+
+
+
         recipe.spawnOutput(entity.position, entities, world, true)
     }
 
@@ -45,7 +48,7 @@ object EventHandler {
                 val entityItems = world.getEntitiesWithinAABB(EntityItem::class.java, AxisAlignedBB(entity.position))
                 val recipe = entity.block?.let { it -> RecipeBaseTransform.matchesFallBlock(it, entityItems.map { it.item }, false) }
                     ?: return
-                recipe.spawnOutput(entity.position, entityItems, world, false)
+                recipe.spawnOutput(entity.block!!, entity.position, entityItems, world, false)
             }
         }
     }

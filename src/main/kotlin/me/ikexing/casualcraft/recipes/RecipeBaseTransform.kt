@@ -6,8 +6,6 @@ import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemStack
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import java.util.*
-import kotlin.random.Random
 
 open class RecipeBaseTransform(
     private val output: ItemStack,
@@ -21,7 +19,7 @@ open class RecipeBaseTransform(
             this.input.any {
                 it.any { recipeInputStack ->
                     val matches = inputStack.matches(recipeInputStack, false)
-                            && inputStack.count >= recipeInputStack.count
+                        && inputStack.count >= recipeInputStack.count
                     if (matches && consume) inputStack.shrink(recipeInputStack.count)
                     matches
                 }
@@ -29,29 +27,21 @@ open class RecipeBaseTransform(
         }
     }
 
-    fun resultMatches(input: List<ItemStack>,  consume: Boolean): Boolean {
+    fun resultMatches(input: List<ItemStack>, consume: Boolean): Boolean {
         return matches(input, consume).size >= input.size
     }
 
-    fun spawnOutput(pos: BlockPos, entities: List<EntityItem>, world: World, dead: Boolean) {
-        if (Random.nextDouble() <= this.chance) {
-            var outputCount = 0
-            while (Objects.nonNull(matchesLightning(entities.map { e -> e.item }, false))) {
-                matchesLightning(entities.map { e -> e.item }, true)
-                outputCount += this.output.count
-            }
-
-            val copy = this.output.copy().splitStack(outputCount.coerceAtMost(64))
-            val output = EntityItem(world, pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), copy)
-            if (dead) entities.forEach(EntityItem::setDead)
-            output.setEntityInvulnerable(true)
-            world.spawnEntity(output)
-        }
+    open fun spawnOutput(pos: BlockPos, entities: List<EntityItem>, world: World, dead: Boolean, outputCount: Int) {
+        val copy = this.output.copy().splitStack(outputCount.coerceAtMost(64))
+        val output = EntityItem(world, pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), copy)
+        if (dead) entities.forEach(EntityItem::setDead)
+        output.setEntityInvulnerable(true)
+        world.spawnEntity(output)
     }
 
     companion object {
 
-        private var transformsRecipes: MutableList<RecipeBaseTransform> = mutableListOf()
+        private val transformsRecipes: MutableList<RecipeBaseTransform> = mutableListOf()
 
         fun addRecipe(recipe: RecipeBaseTransform) {
             transformsRecipes.add(recipe)
@@ -63,16 +53,16 @@ open class RecipeBaseTransform(
                 .sortedByDescending { it.input.size }
         }
 
-        fun matchesLightning(input: List<ItemStack>, consume: Boolean): RecipeBaseTransform? {
+        fun matchesLightning(input: List<ItemStack>, consume: Boolean): RecipeLightningRecipe? {
             return sortedRecipes(RecipeLightningRecipe::class.java).firstOrNull {
                 it.resultMatches(input, consume)
-            }
+            } as RecipeLightningRecipe?
         }
 
-        fun matchesFallBlock(block: IBlockState, input: List<ItemStack>, consume: Boolean): RecipeBaseTransform? {
+        fun matchesFallBlock(block: IBlockState, input: List<ItemStack>, consume: Boolean): RecipeFallingBlockTransform? {
             return sortedRecipes(RecipeFallingBlockTransform::class.java).firstOrNull {
                 (it as RecipeFallingBlockTransform).matches(block, input, consume)
-            }
+            } as RecipeFallingBlockTransform?
         }
 
     }
